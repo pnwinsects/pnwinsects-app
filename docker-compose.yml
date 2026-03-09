@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - db-data:/app/data
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+
+volumes:
+  db-data:
+
+# -------------------------------------------------------
+# Quick start:
+#   docker-compose up --build
+#
+# Then create an admin user (one time):
+#   docker-compose exec web python manage.py createsuperuser
+#
+# Browse to http://localhost:8000
+# Admin panel at http://localhost:8000/admin/
+# -------------------------------------------------------
