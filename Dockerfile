@@ -19,6 +19,16 @@ WORKDIR /app
 COPY requirements-docker.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
+# Django 1.3.5 installed via pip omits template files.
+# Download the source tarball and copy templates into the install location.
+RUN pip download --no-deps --no-binary :all: -d /tmp/dj Django==1.3.5 && \
+    tar xf /tmp/dj/Django-1.3.5.tar.gz -C /tmp/dj && \
+    cp -r /tmp/dj/Django-1.3.5/django/contrib/admin/templates \
+        /usr/local/lib/python2.7/site-packages/django/contrib/admin/ && \
+    cp -r /tmp/dj/Django-1.3.5/django/contrib/admin/media \
+        /usr/local/lib/python2.7/site-packages/django/contrib/admin/ && \
+    rm -rf /tmp/dj
+
 # Copy application code
 COPY . /app/
 

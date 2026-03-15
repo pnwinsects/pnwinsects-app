@@ -55,9 +55,6 @@ INSTALLED_APPS = tuple(
     )
 )
 
-# Use file-based sessions (default dir works in Docker)
-SESSION_ENGINE = "django.contrib.sessions.backends.file"
-
 # Dummy search engine (no Xapian needed)
 HAYSTACK_SEARCH_ENGINE = "dummy"
 
@@ -67,5 +64,38 @@ ALLOWED_HOSTS = ['*']
 # Exempt all URLs from login requirement for easier local browsing
 LOGIN_EXEMPT_URLS = (r'.*',)
 
+# Use database-backed sessions (works reliably with SQLite in Docker)
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
 # Use Docker-specific URL conf that adds static file serving
 ROOT_URLCONF = 'urls_docker'
+
+# Remove cache and CSRF middleware for local dev
+MIDDLEWARE_CLASSES = tuple(
+    m for m in MIDDLEWARE_CLASSES
+    if m not in (
+        'django.middleware.cache.UpdateCacheMiddleware',
+        'django.middleware.cache.FetchFromCacheMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+    )
+)
+
+# Disable CSRF enforcement entirely for local dev (admin uses @csrf_protect
+# decorator which also checks, so we need to set _dont_enforce_csrf_checks)
+class DisableCsrfCheck(object):
+    def process_view(self, request, callback, callback_args, callback_kwargs):
+        request._dont_enforce_csrf_checks = True
+
+MIDDLEWARE_CLASSES = ('settings.DisableCsrfCheck',) + MIDDLEWARE_CLASSES
+
+# Use non-cached loaders in dev so admin templates are found reliably
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
+
+# Explicitly include Django's built-in admin templates
+import django as _django
+TEMPLATE_DIRS = TEMPLATE_DIRS + (
+    os.path.join(os.path.dirname(_django.__file__), 'contrib', 'admin', 'templates'),
+)
