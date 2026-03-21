@@ -1,22 +1,48 @@
 services:
+  db:
+    image: mysql:5.6
+    environment:
+      MYSQL_DATABASE: pnwmoths
+      MYSQL_USER: pnwmoths
+      MYSQL_PASSWORD: pnwmoths
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./data:/docker-entrypoint-initdb.d:ro
+    ports:
+      - '3307:3306'
+
   web:
     build: .
     ports:
       - '8000:8000'
     volumes:
-      - db-data:/app/data
+      - media-data:/app/static/media
     environment:
       - PYTHONDONTWRITEBYTECODE=1
+      - DB_HOST=db
+      - DB_NAME=pnwmoths
+      - DB_USER=pnwmoths
+      - DB_PASSWORD=pnwmoths
+    depends_on:
+      - db
 
 volumes:
   db-data:
+  media-data:
 
 # -------------------------------------------------------
 # Quick start:
-#   docker-compose up --build
+#   1. Place SQL dump in data/ as pnwmoths-local.sql
+#      (loaded automatically on first MySQL startup)
+#   2. docker-compose up --build
+#   3. First run takes a minute (MySQL init + SQL import)
 #
 # Then create an admin user (one time):
 #   docker-compose exec web python manage.py createsuperuser
+#
+# To load media files (species images, plates, etc.):
+#   docker cp /path/to/media/. $(docker-compose ps -q web):/app/static/media/
 #
 # Browse to http://localhost:8000
 # Admin panel at http://localhost:8000/admin/

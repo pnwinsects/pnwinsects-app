@@ -1,7 +1,7 @@
 # Docker-compatible requirements for local development.
 # Based on requirements.txt with the following changes:
 #   - PIL replaced with Pillow (compatible fork)
-#   - Removed MySQL-python (using SQLite for local dev)
+#   - MySQL-python replaced with mysqlclient (compatible, maintained fork)
 #   - Removed xapian-haystack (search engine set to "dummy")
 #   - Removed admin-sentry git dep (unavailable)
 #   - Removed virtualenv/yolk/wsgiref/distribute (not needed in Docker)
@@ -32,4 +32,5 @@ oauth2client==1.1
 python-Levenshtein==0.10.2
 python-gflags==2.0
 python-memcached==1.48
+mysqlclient==1.3.14
 sorl-thumbnail==11.05.2

@@ -8,6 +8,7 @@ RUN sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list && \
         libjpeg-dev \
         zlib1g-dev \
         libfreetype6-dev \
+        default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Pin pip and setuptools to last Python 2.7-compatible versions

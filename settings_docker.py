@@ -2,18 +2,22 @@
 """
 Docker-specific Django settings for local development.
 Imports everything from settings_global, then overrides for a
-self-contained SQLite-based environment.
+self-contained Docker environment with MySQL.
 """
 from settings_global import *
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-# SQLite database — no external DB server needed
+# MySQL database — matches the db service in docker-compose.yml
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/app/data/dev.db',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', 'pnwmoths'),
+        'USER': os.environ.get('DB_USER', 'pnwmoths'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'pnwmoths'),
+        'HOST': os.environ.get('DB_HOST', 'db'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
 
