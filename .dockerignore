@@ -1,0 +1,6 @@
+.git
+*.pyc
+__pycache__
+data/
+*.db
+.DS_Store
