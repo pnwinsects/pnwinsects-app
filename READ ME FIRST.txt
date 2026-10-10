@@ -1,0 +1,75 @@
+PNW MOTHS - OFFLINE REFERENCE COPY
+==================================
+
+This folder is a complete, offline copy of the old dev.pnwmoths.biol.wwu.edu
+site. It runs on your own computer. Nothing in it is on the internet, and
+nothing you do in it reaches the live site.
+
+
+BEFORE THE FIRST TIME
+---------------------
+
+1. Install Docker Desktop (free) from:
+       https://www.docker.com/products/docker-desktop/
+   Accept all the suggested options. Restart the computer if it asks.
+
+2. Open Docker Desktop from the Start menu and leave it running. Wait until
+   the whale icon at the bottom-left stops moving and turns green.
+
+
+EVERY TIME
+----------
+
+3. Double-click            Start PNW Moths
+   A black window opens and tells you what it is doing. The first time it
+   will take up to fifteen minutes; after that, under a minute.
+
+4. Your browser opens and asks you to sign in:
+       User name:  merrill
+       Password:   pnwmoths
+
+5. When you have finished for the day, double-click      Stop PNW Moths
+
+
+WHAT IT IS FOR
+--------------
+
+Looking things up
+    Browse exactly as you did on the old site, and compare what it says with
+    the new site at moths.pnwinsects.org.
+
+Pulling records
+    Go to      http://localhost:8000/admin/species/speciesrecord/
+    Narrow the list using the filters down the right-hand side, or the search
+    box at the top. Tick the rows you want (or the box in the header to tick
+    the whole page). Then choose
+
+        Export ALL Records as CSV
+
+    from the "Action" menu and press Go. The file lands in your Downloads
+    folder and opens in Excel.
+
+    IMPORTANT: the two older choices in that menu are not the same thing.
+    "Export Records as CSV" quietly leaves out every record that has a
+    photograph, and "Export Labels as CSV" quietly leaves out every record
+    that does not. Only "Export ALL Records as CSV" gives you everything you
+    ticked. If in doubt, use that one.
+
+
+WHAT IT WILL NOT DO
+-------------------
+
+It will not let you change anything. Every Add, Save and Delete button is
+either missing or refuses, on purpose: a change made here would never reach
+the live site, so it would only ever mislead you.
+
+The deep-zoom photo viewer does not work in this copy. Ordinary photographs
+do. (The zoom tiles are another four gigabytes and were left out to keep the
+download manageable.)
+
+
+IF SOMETHING GOES WRONG
+-----------------------
+
+Double-click "Stop PNW Moths", then "Start PNW Moths" again. If that does not
+fix it, send Jason the text from the black window.

@@ -90,7 +90,49 @@ class DisableCsrfCheck(object):
     def process_view(self, request, callback, callback_args, callback_kwargs):
         request._dont_enforce_csrf_checks = True
 
-MIDDLEWARE_CLASSES = ('settings.DisableCsrfCheck',) + MIDDLEWARE_CLASSES
+
+class ReadOnlyGuard(object):
+    """Refuse anything that would write to this copy.
+
+    local_overrides.py hides the Add and Delete controls, but hiding a control
+    is a cosmetic claim -- this is the one that holds, because it does not
+    depend on every one of the twenty-odd registered admins having been patched
+    correctly. Three kinds of POST are let through: the admin login form (which
+    Django 1.3 posts back to whatever URL you asked for, flagged with
+    this_is_the_login_form), the front-door sign-in at LOGIN_URL, and the CSV
+    export actions, which are POSTs to a changelist that only read.
+    """
+
+    SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS', 'TRACE')
+
+    MESSAGE = (
+        '<h1>This is a read-only copy</h1>'
+        '<p>This is an offline reference copy of the retired PNW Moths site, kept '
+        'for looking things up and for exporting records. It cannot be changed, '
+        'because a change made here would not reach the live site &mdash; it would '
+        'only sit in this copy on your own computer and be lost the next time the '
+        'data was reloaded.</p>'
+        '<p>Press the Back button in your browser to carry on.</p>'
+    )
+
+    def process_request(self, request):
+        if request.method in self.SAFE_METHODS:
+            return None
+        # Signing in and out writes to the session table, not to the catalogue.
+        # The legacy homepage is flagged login-required, so blocking this would
+        # lock the front door of the copy we are shipping.
+        if request.path_info in (LOGIN_URL, '/accounts/logout/'):
+            return None
+        if request.POST.get('this_is_the_login_form'):
+            return None
+        from local_overrides import ALLOWED_ADMIN_ACTIONS
+        if request.POST.get('action') in ALLOWED_ADMIN_ACTIONS:
+            return None
+
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden(self.MESSAGE)
+
+MIDDLEWARE_CLASSES = ('settings.ReadOnlyGuard', 'settings.DisableCsrfCheck') + MIDDLEWARE_CLASSES
 
 # Use non-cached loaders in dev so admin templates are found reliably
 TEMPLATE_LOADERS = (

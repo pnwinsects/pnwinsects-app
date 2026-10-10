@@ -1,0 +1,48 @@
+services:
+  db:
+    image: mysql:5.6
+    environment:
+      MYSQL_DATABASE: pnwmoths
+      MYSQL_USER: pnwmoths
+      MYSQL_PASSWORD: pnwmoths
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./data:/docker-entrypoint-initdb.d:ro
+    ports:
+      - '3307:3306'
+
+  web:
+    image: pnwmoths-local-web:1.0
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./media:/app/static/media
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - DB_HOST=db
+      - DB_NAME=pnwmoths
+      - DB_USER=pnwmoths
+      - DB_PASSWORD=pnwmoths
+    depends_on:
+      - db
+
+volumes:
+  db-data:
+
+# -------------------------------------------------------
+# The offline variant of docker-compose.yml, used by the bundle shipped to
+# the curator. The only difference is that `web` names a pre-built image
+# instead of building one.
+#
+# That difference is the whole point. Building the 2013 stack from source
+# needs archive.debian.org and PyPI to keep serving Python 2.7 files, and
+# needs them on a machine with no developer tools. The bundle's launcher
+# loads images/pnwmoths-local-images.tar instead, so the only network the
+# curator's machine ever needs is the one that downloaded the bundle.
+#
+# Rebuild and re-export the image with:
+#   docker compose build web
+#   docker tag pnwinsects-app-web:latest pnwmoths-local-web:1.0
+#   docker save pnwmoths-local-web:1.0 mysql:5.6 -o images/pnwmoths-local-images.tar
+# -------------------------------------------------------

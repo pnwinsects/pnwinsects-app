@@ -9,6 +9,11 @@ import django
 from django.conf import settings
 from django.conf.urls.defaults import patterns
 
+# urls.py has run admin.autodiscover() by now, so every ModelAdmin is registered
+# and can be locked read-only in place. See local_overrides.py.
+import local_overrides
+local_overrides.apply()
+
 # Serve media files (CSS, JS, images) from MEDIA_ROOT in development
 if settings.DEBUG:
     admin_media_root = os.path.join(os.path.dirname(django.__file__), 'contrib', 'admin', 'media')

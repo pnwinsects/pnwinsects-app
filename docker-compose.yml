@@ -17,7 +17,7 @@ services:
     ports:
       - '8000:8000'
     volumes:
-      - media-data:/app/static/media
+      - ./media:/app/static/media
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - DB_HOST=db
@@ -29,7 +29,6 @@ services:
 
 volumes:
   db-data:
-  media-data:
 
 # -------------------------------------------------------
 # Quick start:
@@ -38,12 +37,14 @@ volumes:
 #   2. docker-compose up --build
 #   3. First run takes a minute (MySQL init + SQL import)
 #
-# Then create an admin user (one time):
-#   docker-compose exec web python manage.py createsuperuser
-#
-# To load media files (species images, plates, etc.):
-#   docker cp /path/to/media/. $(docker-compose ps -q web):/app/static/media/
+# Media (species photographs, plates, key illustrations) is a bind mount
+# from ./media so the whole thing travels as an ordinary folder. Without it
+# factsheets raise a TemplateSyntaxError: the thumbnailer reads the cached
+# thumbnail off disk and a missing file is a hard 500, not a blank image.
 #
 # Browse to http://localhost:8000
-# Admin panel at http://localhost:8000/admin/
+# Records at http://localhost:8000/admin/species/speciesrecord/
+#
+# This is a read-only local reference copy of the retired WWU site. Edits made
+# here go nowhere; the admin is locked read-only on purpose.
 # -------------------------------------------------------

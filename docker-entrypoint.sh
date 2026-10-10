@@ -66,5 +66,25 @@ else
     echo ""
 fi
 
+# Seed the sign-in account. Idempotent, and done here rather than in an
+# init .sql because MySQL only runs those when it initialises an empty data
+# directory -- a copy that has already been started once would never get one.
+# Merrill must never have to run createsuperuser at a terminal.
+python - <<'PY'
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+from django.contrib.auth.models import User
+
+username = os.environ.get('ADMIN_USER', 'merrill')
+password = os.environ.get('ADMIN_PASSWORD', 'pnwmoths')
+
+user, created = User.objects.get_or_create(username=username)
+user.is_staff = True
+user.is_superuser = True
+user.set_password(password)
+user.save()
+print(" Sign-in account '%s' %s." % (username, "created" if created else "reset"))
+PY
+
 echo "Starting development server at http://localhost:8000"
 exec "$@"
