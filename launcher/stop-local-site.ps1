@@ -8,7 +8,7 @@ Set-Location $root
 Write-Host 'Stopping the PNW Moths reference copy...'
 Write-Host ''
 
-docker info *> $null
+if (Get-Command docker -ErrorAction SilentlyContinue) { docker info *> $null } else { $LASTEXITCODE = 1 }
 if ($LASTEXITCODE -ne 0) {
     Write-Host 'Docker Desktop is not running, so the site is already stopped.'
     Start-Sleep -Seconds 4

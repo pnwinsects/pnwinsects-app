@@ -9,26 +9,42 @@ nothing you do in it reaches the live site.
 BEFORE THE FIRST TIME
 ---------------------
 
-1. Install Docker Desktop (free) from:
+1. Unzip the download first. Right-click the file you downloaded,
+       pnwmoths-local-site.zip
+   choose "Extract All...", and press Extract. It is a big file, so this
+   takes a few minutes.
+
+   Do all of the rest of this in the new folder that appears. Opening the
+   zip and double-clicking inside it will NOT work - Windows copies only
+   the one file you clicked and leaves the rest of the site behind.
+
+2. Install Docker Desktop (free) from:
        https://www.docker.com/products/docker-desktop/
    Accept all the suggested options. Restart the computer if it asks.
 
-2. Open Docker Desktop from the Start menu and leave it running. Wait until
+3. Open Docker Desktop from the Start menu and leave it running. Wait until
    the whale icon at the bottom-left stops moving and turns green.
 
 
 EVERY TIME
 ----------
 
-3. Double-click            Start PNW Moths
-   A black window opens and tells you what it is doing. The first time it
-   will take up to fifteen minutes; after that, under a minute.
+4. Double-click            Start PNW Moths
+   A black window opens and tells you what it is doing.
 
-4. Your browser opens and asks you to sign in:
+   The first time only, Windows may ask whether you are sure you want to
+   run this, because it came from the internet. Choose "Run" - or, if the
+   blue "Windows protected your PC" box appears, click "More info" and then
+   "Run anyway". It will not ask again.
+
+   The first run takes a few minutes, because the whole database is being
+   loaded. After that it comes up in about ten seconds.
+
+5. Your browser opens and asks you to sign in:
        User name:  merrill
        Password:   pnwmoths
 
-5. When you have finished for the day, double-click      Stop PNW Moths
+6. When you have finished for the day, double-click      Stop PNW Moths
 
 
 WHAT IT IS FOR

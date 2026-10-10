@@ -18,7 +18,23 @@ function Fail($message) {
 Write-Host 'Starting the PNW Moths reference copy...'
 Write-Host ''
 
-# 1. Is Docker Desktop running?
+# 1. Is Docker Desktop installed at all? Checked separately, because a missing
+#    command leaves $LASTEXITCODE untouched and the check below would pass.
+if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
+    Fail @'
+Docker Desktop does not appear to be installed on this computer.
+
+Install it (it is free) from:
+    https://www.docker.com/products/docker-desktop/
+
+Accept all the suggested options, and restart the computer if it asks you
+to. Then open Docker Desktop from the Start menu, wait until the whale icon
+in the bottom-left corner stops animating and turns green, and double-click
+"Start PNW Moths" again.
+'@
+}
+
+# 2. Is Docker Desktop running?
 docker info *> $null
 if ($LASTEXITCODE -ne 0) {
     Fail @'
@@ -61,12 +77,16 @@ $deadline = (Get-Date).AddMinutes(20)
 $ready = $false
 while ((Get-Date) -lt $deadline) {
     try {
+        # Windows PowerShell 5.1 follows the redirect the login-gated homepage
+        # issues, so a 200 here means the site is up and answering. Keep this
+        # call plain: 5.1 has no -SkipHttpErrorCheck, and an unknown parameter
+        # would throw into the catch on every pass and never succeed.
         $r = Invoke-WebRequest 'http://localhost:8000/' -UseBasicParsing -TimeoutSec 20
         if ($r.StatusCode -eq 200) { $ready = $true; break }
     } catch {
-        Write-Host '  still loading...'
-        Start-Sleep -Seconds 10
     }
+    Write-Host '  still loading...'
+    Start-Sleep -Seconds 10
 }
 
 if (-not $ready) {
