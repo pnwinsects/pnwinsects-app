@@ -1,0 +1,107 @@
+PNW MOTHS - OFFLINE REFERENCE COPY
+==================================
+
+This folder is a complete, offline copy of the old dev.pnwmoths.biol.wwu.edu
+site. It runs on your own computer. Nothing in it is on the internet, and
+nothing you do in it reaches the live site.
+
+
+BEFORE THE FIRST TIME
+---------------------
+
+1. Unzip the download first.
+
+   On Windows, right-click the file you downloaded,
+       pnwmoths-local-site.zip
+   choose "Extract All...", and press Extract. It is a big file, so this
+   takes a few minutes.
+
+   On a Mac, double-click pnwmoths-local-site.zip. This creates the folder
+   containing the site.
+
+   Do all of the rest of this in that new folder. On Windows, opening the
+   zip and double-clicking inside it will NOT work - Windows copies only the
+   one file you clicked and leaves the rest of the site behind.
+
+2. Install Docker Desktop (free) from:
+       https://www.docker.com/products/docker-desktop/
+   Mac users: choose the download for a Mac with Apple silicon.
+   Accept all the suggested options. Restart the computer if it asks.
+
+3. Open Docker Desktop and leave it running. On a Mac, wait until it says
+   "Engine running". On Windows, wait until Docker Desktop says it is
+   running. "Resource Saver" is normal before the moth site is started.
+
+
+EVERY TIME
+----------
+
+4. Start the site:
+
+   Windows: double-click        Start PNW Moths
+   Mac:     control-click       Start PNW Moths.command
+            choose Open, then click Open in the confirmation box
+
+   A window opens and tells you what it is doing.
+
+   The first time only, the computer may ask whether you are sure you want
+   to run this because it came from the internet. On Windows choose "Run",
+   or click "More info" and then "Run anyway". On a Mac, the control-click
+   and Open steps above give you an Open button. It will not ask again.
+
+   The first run takes a few minutes, because the whole database is being
+   loaded. It may take longer on a Mac the first time. After that it comes
+   up much more quickly.
+
+5. Your browser opens and asks you to sign in:
+   Use the sign-in details Jason sent with this private download. They are not
+   stored in the public source-code repositories.
+
+6. When you have finished for the day:
+
+   Windows: double-click        Stop PNW Moths
+   Mac:     double-click        Stop PNW Moths.command
+
+
+WHAT IT IS FOR
+--------------
+
+Looking things up
+    Browse exactly as you did on the old site, and compare what it says with
+    the new site at moths.pnwinsects.org.
+
+Pulling records
+    Go to      http://localhost:8000/admin/species/speciesrecord/
+    Narrow the list using the filters down the right-hand side, or the search
+    box at the top. Tick the rows you want (or the box in the header to tick
+    the whole page). Then choose
+
+        Export ALL Records as CSV
+
+    from the "Action" menu and press Go. The file lands in your Downloads
+    folder and opens in Excel.
+
+    IMPORTANT: the two older choices in that menu are not the same thing.
+    "Export Records as CSV" quietly leaves out every record that has a
+    photograph, and "Export Labels as CSV" quietly leaves out every record
+    that does not. Only "Export ALL Records as CSV" gives you everything you
+    ticked. If in doubt, use that one.
+
+
+WHAT IT WILL NOT DO
+-------------------
+
+It will not let you change anything. Every Add, Save and Delete button is
+either missing or refuses, on purpose: a change made here would never reach
+the live site, so it would only ever mislead you.
+
+The deep-zoom photo viewer does not work in this copy. Ordinary photographs
+do. (The zoom tiles are another four gigabytes and were left out to keep the
+download manageable.)
+
+
+IF SOMETHING GOES WRONG
+-----------------------
+
+Open "Stop PNW Moths", then "Start PNW Moths" again. If that does not fix it,
+send Jason the text from the window.

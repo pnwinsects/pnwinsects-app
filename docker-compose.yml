@@ -1,0 +1,54 @@
+services:
+  db:
+    image: mysql:5.6
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:?Set DB_NAME in bundle.env}
+      MYSQL_USER: ${DB_USER:?Set DB_USER in bundle.env}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in bundle.env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in bundle.env}
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./data:/docker-entrypoint-initdb.d:ro
+    ports:
+      - '3307:3306'
+
+  web:
+    build: .
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./media:/app/static/media
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME:?Set DB_NAME in bundle.env}
+      - DB_USER=${DB_USER:?Set DB_USER in bundle.env}
+      - DB_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in bundle.env}
+      - ADMIN_USER=${ADMIN_USER:?Set ADMIN_USER in bundle.env}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in bundle.env}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in bundle.env}
+    depends_on:
+      - db
+
+volumes:
+  db-data:
+
+# -------------------------------------------------------
+# Quick start:
+#   1. Place SQL dump in data/ as pnwmoths-local.sql
+#      (loaded automatically on first MySQL startup)
+#   2. docker-compose up --build
+#   3. First run takes a minute (MySQL init + SQL import)
+#
+# Media (species photographs, plates, key illustrations) is a bind mount
+# from ./media so the whole thing travels as an ordinary folder. Without it
+# factsheets raise a TemplateSyntaxError: the thumbnailer reads the cached
+# thumbnail off disk and a missing file is a hard 500, not a blank image.
+#
+# Browse to http://localhost:8000
+# Records at http://localhost:8000/admin/species/speciesrecord/
+#
+# This is a read-only local reference copy of the retired WWU site. Edits made
+# here go nowhere; the admin is locked read-only on purpose.
+# -------------------------------------------------------
