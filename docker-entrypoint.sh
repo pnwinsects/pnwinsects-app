@@ -1,0 +1,98 @@
+#!/bin/bash
+set -e
+
+: "${DB_HOST:?DB_HOST is required}"
+: "${DB_PORT:?DB_PORT is required}"
+: "${DB_USER:?DB_USER is required}"
+: "${DB_PASSWORD:?DB_PASSWORD is required}"
+: "${DB_NAME:?DB_NAME is required}"
+: "${ADMIN_USER:?ADMIN_USER is required}"
+: "${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}"
+
+# Wait for MySQL to be ready
+echo "Waiting for MySQL at ${DB_HOST}:${DB_PORT}..."
+while ! python -c "
+import MySQLdb
+MySQLdb.connect(
+    host='${DB_HOST}',
+    port=int('${DB_PORT}'),
+    user='${DB_USER}',
+    passwd='${DB_PASSWORD}',
+    db='${DB_NAME}',
+)
+" 2>/dev/null; do
+    sleep 2
+done
+echo "MySQL is ready!"
+
+# Create migrations directory for species app (gitignored in repo)
+mkdir -p /app/species/migrations
+touch /app/species/migrations/__init__.py
+
+# Check if the database was loaded from a SQL dump (has tables already)
+TABLE_COUNT=$(python -c "
+import MySQLdb
+conn = MySQLdb.connect(
+    host='${DB_HOST}',
+    port=int('${DB_PORT}'),
+    user='${DB_USER}',
+    passwd='${DB_PASSWORD}',
+    db='${DB_NAME}',
+)
+cur = conn.cursor()
+cur.execute('SHOW TABLES')
+print(len(cur.fetchall()))
+conn.close()
+")
+
+if [ "$TABLE_COUNT" -gt 0 ]; then
+    echo "==================================================="
+    echo " Database has $TABLE_COUNT tables (loaded from SQL dump)"
+    echo "==================================================="
+else
+    echo "==================================================="
+    echo " Empty database — initializing schema..."
+    echo "==================================================="
+
+    # Create initial South migration for species
+    python manage.py schemamigration species --initial || true
+
+    # Create all database tables (--noinput skips superuser prompt)
+    python manage.py syncdb --noinput
+
+    # Apply South migrations
+    python manage.py migrate || true
+
+    echo ""
+    echo "==================================================="
+    echo " Database initialized!"
+    echo " Create an admin user by running:"
+    echo ""
+    echo "   docker-compose exec web python manage.py createsuperuser"
+    echo ""
+    echo "==================================================="
+    echo ""
+fi
+
+# Seed the sign-in account. Idempotent, and done here rather than in an
+# init .sql because MySQL only runs those when it initialises an empty data
+# directory -- a copy that has already been started once would never get one.
+# Merrill must never have to run createsuperuser at a terminal.
+python - <<'PY'
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+from django.contrib.auth.models import User
+
+username = os.environ['ADMIN_USER']
+password = os.environ['ADMIN_PASSWORD']
+
+user, created = User.objects.get_or_create(username=username)
+user.is_staff = True
+user.is_superuser = True
+user.set_password(password)
+user.save()
+print(" Sign-in account '%s' %s." % (username, "created" if created else "reset"))
+PY
+
+echo "Starting development server at http://localhost:8000"
+exec "$@"
