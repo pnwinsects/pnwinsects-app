@@ -5,8 +5,16 @@
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root" || exit 1
 export PATH="$PATH:/usr/local/bin:/opt/homebrew/bin:/Applications/Docker.app/Contents/Resources/bin"
+
+# Bundles are assembled on Windows as well as macOS. Normalize the private
+# configuration before the shell or Docker Compose reads it: a CR left on
+# WEB_PORT becomes "8000^M", which Compose rejects as an invalid host port.
+umask 077
+runtime_env="${TMPDIR:-/tmp}/pnwinsects-bundle-env-$$"
+trap 'rm -f "$runtime_env"' EXIT HUP INT TERM
+tr -d '\r' < "$root/bundle.env" > "$runtime_env"
 set -a
-. "$root/bundle.env"
+. "$runtime_env"
 set +a
 
 site_title="${SITE_TITLE:-PNW Moths}"
@@ -60,7 +68,7 @@ Try downloading and unpacking it again."
     fi
 fi
 
-if ! "$docker_path" compose --env-file bundle.env -f docker-compose.offline.yml up -d; then
+if ! "$docker_path" compose --env-file "$runtime_env" -f docker-compose.offline.yml up -d; then
     fail "The site could not be started. Please send Jason the text in this window."
 fi
 
